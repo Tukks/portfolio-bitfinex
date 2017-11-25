@@ -1,5 +1,9 @@
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
-import { Subscription } from "rxjs";
+import { Observable } from 'rxjs/Rx';
+import { Component, AfterViewInit, ElementRef, OnDestroy } from '@angular/core';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/take';
+import 'rxjs/add/operator/last';
+
 import {
   AngularFireDatabase,
   AngularFireList,
@@ -17,32 +21,73 @@ import * as moment from 'moment';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements AfterViewInit {
-  itemsRef: AngularFireList<any>;
+export class AppComponent implements AfterViewInit, OnDestroy {
+  itemPortfolioInit: AngularFireList<any>;
+  itemPortfolioPush: AngularFireList<any>;
+  timeline: any;
+  options: any;
   dataset = new vis.DataSet({});
 
-  constructor(private db: AngularFireDatabase, private element: ElementRef) {}
+  constructor(private db: AngularFireDatabase, private element: ElementRef) {
+    this.setPortfolioGraphInit();
+    this.setPortfolioGraphPush();
+  }
 
   ngAfterViewInit() {
+    /************************ Graph ************************/
     let container = document.getElementById('test');
 
     // Configuration for the Timeline
-    let options = {
+    this.options = {
       moveable: true,
-      zoomable : true,
-      start: '2017-11-22',
-      end: '2017-11-23'
+      zoomable: true,
+      height: '400px',
+      width: '400px'
     };
-
     // Create a Timeline
-    let timeline = new vis.Graph2d(container, this.dataset, options);
-    this.itemsRef = this.db.list('/portfolio/totalByTime');
-    // Use snapshotChanges().map() to store the key
-    this.itemsRef.snapshotChanges(['child_added']).forEach(changes => {
-       changes.forEach(c => {
-        this.dataset.add({x: moment(new Date(Number(c.key))).format('YYYY-MM-DD HH:mm'), y: Number(Math.ceil(c.payload.val()))});
-      });
-    });
-
+    this.timeline = new vis.Graph2d(container, this.dataset, this.options);
   }
+  /************************ Data ************************/
+
+  /**
+   * cette methode reagit au push de firebase de nouvelle données, on ajoute
+   * les elements au dataset
+   */
+  private setPortfolioGraphPush() {
+    // recupere seulement les derniers elements ajouté. grace a la query limitToLast
+    this.itemPortfolioPush = this.db.list('/portfolio/totalByTime', ref =>
+      ref.orderByKey().limitToLast(1)
+    );
+    this.itemPortfolioPush
+      .valueChanges()
+      .subscribe((changes: [{ date; totalForTime }]) => {
+        changes.forEach(c => {
+          this.dataset.add({
+            x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm'),
+            y: Number(Math.ceil(c.totalForTime))
+          });
+        });
+      });
+  }
+
+  /**
+   * Recupere TOUTES les données presente dans firebase et init le Dataset
+   */
+  private setPortfolioGraphInit() {
+    this.itemPortfolioInit = this.db.list('/portfolio/totalByTime');
+    // Get all value from firebase, only once (take(1)), the next subscribe  listen for new element
+    this.itemPortfolioInit
+      .valueChanges()
+      .take(1)
+      .subscribe(changes => {
+        changes.forEach(c => {
+          this.dataset.add({
+            x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm'),
+            y: Number(Math.ceil(c.totalForTime))
+          });
+        });
+      });
+  }
+
+  ngOnDestroy(): void {}
 }
