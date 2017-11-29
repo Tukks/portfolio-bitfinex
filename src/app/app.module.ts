@@ -11,21 +11,27 @@ import { AuthService } from './services/auth.service';
 import { GraphWalletComponent } from './component/graph-wallet/graph-wallet.component';
 import { AppRoutes } from './app.route';
 import { environment } from '../environments/environment';
+import { AdditionalInfoComponent } from './component/additional-info/additional-info.component';
+import { AngularFirestoreModule } from 'angularfire2/firestore';
+import { FormsModule } from '@angular/forms';
+import { AuthGuard } from './services/auth-guard';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    GraphWalletComponent
+    GraphWalletComponent,
+    AdditionalInfoComponent
   ],
   imports: [
     BrowserModule,
     AppRoutes,
     AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
     AngularFireAuthModule,
-    BrowserAnimationsModule
+    FormsModule
   ],
-  providers: [AngularFireDatabase, AuthService],
+  providers: [AuthService, AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

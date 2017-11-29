@@ -1,36 +1,46 @@
-import { Observable } from 'rxjs/Rx';
-import { Component, AfterViewInit, ElementRef, OnDestroy } from '@angular/core';
+import 'rxjs/add/operator/last';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/take';
-import 'rxjs/add/operator/last';
+
 import {
-  AngularFireDatabase,
-  AngularFireList,
-  SnapshotAction,
-  AngularFireAction,
-  ChildEvent
-} from 'angularfire2/database';
-import * as vis from 'vis';
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  AfterViewInit
+} from '@angular/core';
+import { AngularFireAuth } from 'angularfire2/auth';
+import {
+  AngularFirestore,
+  AngularFirestoreCollection
+} from 'angularfire2/firestore';
 import * as moment from 'moment';
+import * as vis from 'vis';
+import { AuthService } from '../../services/auth.service';
+
 @Component({
   selector: 'app-graph-wallet',
   templateUrl: './graph-wallet.component.html',
   styleUrls: ['./graph-wallet.component.css']
 })
 export class GraphWalletComponent implements AfterViewInit, OnDestroy {
-  itemPortfolioInit: AngularFireList<any>;
-  itemPortfolioPush: AngularFireList<any>;
+  itemPortfolioInit: AngularFirestoreCollection<any>;
+  itemPortfolioPush: AngularFirestoreCollection<any>;
   graph2d: any;
   options: any;
   dataset = new vis.DataSet({});
 
-  constructor(private db: AngularFireDatabase, private element: ElementRef) {
+  constructor(
+    private db: AngularFirestore,
+    private auth: AngularFireAuth,
+    private element: ElementRef,
+    private authService: AuthService
+  ) {
     this.setPortfolioGraphInit();
     this.setPortfolioGraphPush();
   }
-
+  /************************ Graph ************************/
   ngAfterViewInit() {
-    /************************ Graph ************************/
     let container = document.getElementById('graph');
 
     // Configuration for the Graph
@@ -51,15 +61,18 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
    */
   private setPortfolioGraphPush() {
     // recupere seulement les derniers elements ajouté. grace a la query limitToLast
-    this.itemPortfolioPush = this.db.list('/portfolio/totalByTime', ref =>
-      ref.orderByKey().limitToLast(1)
-    );
+    this.itemPortfolioPush = this.db
+      .collection('users')
+      .doc(this.auth.auth.currentUser.uid)
+      .collection('totalByTime', ref =>  ref.orderBy('date', 'desc').limit(1));
     this.itemPortfolioPush
       .valueChanges()
       .subscribe((changes: [{ date; totalForTime }]) => {
         changes.forEach(c => {
+          console.log('push' + moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm:ss'));
+
           this.dataset.add({
-            x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm'),
+            x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm:ss'),
             y: Number(Math.ceil(c.totalForTime))
           });
         });
@@ -70,7 +83,11 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
    * Recupere TOUTES les données presente dans firebase et init le Dataset
    */
   private setPortfolioGraphInit() {
-    this.itemPortfolioInit = this.db.list('/portfolio/totalByTime');
+    this.itemPortfolioInit = this.db
+      .collection('users')
+      .doc(this.auth.auth.currentUser.uid)
+      .collection('totalByTime');
+    // this.itemPortfolioInit = this.db.collection('/portfolio/totalByTime');
     // Get all value from firebase, only once (take(1)), the next subscribe  listen for new element
     this.itemPortfolioInit
       .valueChanges()
@@ -78,7 +95,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
       .subscribe(changes => {
         changes.forEach(c => {
           this.dataset.add({
-            x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm'),
+            x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm:ss'),
             y: Number(Math.ceil(c.totalForTime))
           });
         });
@@ -86,5 +103,4 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {}
-
 }

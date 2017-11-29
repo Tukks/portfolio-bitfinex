@@ -1,25 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
-  user = null;
-
-  constructor(private authService: AuthService, private router: Router) {}
+export class LoginComponent {
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private zone: NgZone
+  ) {}
 
   signInWithGoogle() {
     this.authService
       .signInWithGoogle()
       .then(res => {
-        this.router.navigate(['wallet']);
+        // Quick fix https://stackoverflow.com/questions/45204998/angular-cli-lifecycle-hooks-not-being-called-on-navigation
+        this.zone.run(() => {
+          if (res.additionalUserInfo.isNewUser) {
+            this.router.navigate(['/additional_info']);
+          } else {
+            this.router.navigate(['wallet']);
+          }
+        });
       })
       .catch(err => console.log(err));
   }
-
-  ngOnInit() {}
 }
