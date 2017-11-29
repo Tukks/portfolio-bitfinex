@@ -12,6 +12,7 @@ import {
 } from 'angularfire2/database';
 import * as vis from 'vis';
 import * as moment from 'moment';
+import { AuthService } from './services/auth.service';
 /**
  * TODO on this screen :
  * ** make graph look like stream but stop on rangechanged and start again when user go to end of data
@@ -35,7 +36,9 @@ import * as moment from 'moment';
 })
 export class AppComponent {
 
-  constructor() {
+  constructor(private authService: AuthService) {
   }
-
+  logout() {
+    this.authService.logout();
+  }
 }

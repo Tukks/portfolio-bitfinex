@@ -2,21 +2,14 @@ import 'rxjs/add/operator/last';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/take';
 
-import {
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  AfterViewInit
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
-import {
-  AngularFirestore,
-  AngularFirestoreCollection
-} from 'angularfire2/firestore';
+import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
 import * as moment from 'moment';
 import * as vis from 'vis';
+
 import { AuthService } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-graph-wallet',
@@ -26,6 +19,7 @@ import { AuthService } from '../../services/auth.service';
 export class GraphWalletComponent implements AfterViewInit, OnDestroy {
   itemPortfolioInit: AngularFirestoreCollection<any>;
   itemPortfolioPush: AngularFirestoreCollection<any>;
+  pushSubscribe: Subscription;
   graph2d: any;
   options: any;
   dataset = new vis.DataSet({});
@@ -65,7 +59,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
       .collection('users')
       .doc(this.auth.auth.currentUser.uid)
       .collection('totalByTime', ref =>  ref.orderBy('date', 'desc').limit(1));
-    this.itemPortfolioPush
+    this.pushSubscribe = this.itemPortfolioPush
       .valueChanges()
       .subscribe((changes: [{ date; totalForTime }]) => {
         changes.forEach(c => {
@@ -102,5 +96,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this.pushSubscribe.unsubscribe();
+  }
 }

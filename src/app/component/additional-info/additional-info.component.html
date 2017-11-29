@@ -1,9 +1,19 @@
-<h1>Who Are You?</h1>
-<div class="input-group">
-  <input type="text" class="form-control" placeholder="Public Key" aria-label="Public Key" aria-describedby="basic-addon1"  [(ngModel)]="publicKey">
+
+
+<div class="row">
+  <div class="col">
+  </div>
+  <div class="col mt-2 text-center">
+    <h1>Who Are You?</h1>
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Public Key" aria-label="Public Key" aria-describedby="basic-addon1"  [(ngModel)]="publicKey">
+    </div>
+    <br>
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Private key" aria-label="Private key" aria-describedby="basic-addon2" [(ngModel)]="privateKey">
+    </div>
+    <input class="btn btn-primary mt-3" type="submit" value="Submit" (click)="submit()">
+  </div>
+  <div class="col">
+  </div>
 </div>
-<br>
-<div class="input-group">
-  <input type="text" class="form-control" placeholder="Private key" aria-label="Private key" aria-describedby="basic-addon2" [(ngModel)]="privateKey">
-</div>
-<input class="btn btn-primary" type="submit" value="Submit" (click)="submit()">

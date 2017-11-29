@@ -1,8 +1,9 @@
-import { AngularFireAuth } from 'angularfire2/auth';
 import { Component, OnInit } from '@angular/core';
-import { AngularFirestore } from 'angularfire2/firestore';
-import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFirestore } from 'angularfire2/firestore';
+
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-additional-info',
