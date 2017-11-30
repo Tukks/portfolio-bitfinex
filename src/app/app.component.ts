@@ -24,9 +24,6 @@ import { AuthService } from './services/auth.service';
  * TODO General :
  * ** add overview wallet, need change on working.js
  * ** add graph par monnaie, need change working.js
- * ** multi user? permet a l'utilisateur de charger sa clé bitfinex dans l'interface, firebase le
- * gére, on pourrait le rattacher a son profil lors de l'inscription
- * nodeJs: forEach user sur firebase, get key bitfinex, faire les requetes pour chaque user
  * **
  */
 @Component({

@@ -13,6 +13,7 @@ import * as vis from 'vis';
 
 import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
+// TODO put in service push and init, needed to reuse this component for other graph
 
 @Component({
   selector: 'app-graph-wallet',
@@ -26,7 +27,8 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
   graph2d: any;
   options: any;
   dataset = new vis.DataSet({});
-
+  loading = true;
+  container;
   constructor(
     private db: AngularFirestore,
     private auth: AngularFireAuth,
@@ -38,7 +40,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
   }
   /************************ Graph ************************/
   ngAfterViewInit() {
-    let container = document.getElementById('graph');
+    this.container = document.getElementById('graph');
 
     // Configuration for the Graph
     this.options = {
@@ -47,8 +49,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
       height: '500px',
       width: '800px'
     };
-    // Create a graph2d
-    this.graph2d = new vis.Graph2d(container, this.dataset, this.options);
+
   }
   /************************ Data ************************/
 
@@ -96,9 +97,12 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
             y: Number(Math.ceil(c.totalForTime))
           });
         });
+        // Create a graph2d
         this.options.start = this.dataset.min('x')['x'];
         this.options.end = this.dataset.max('x')['x'];
-        this.graph2d.setOptions(this.options);
+        // this.graph2d.setOptions(this.options);
+        this.graph2d = new vis.Graph2d(this.container, this.dataset, this.options);
+        this.loading = false;
       });
   }
 
