@@ -4,7 +4,10 @@ import 'rxjs/add/operator/take';
 
 import { AfterViewInit, Component, ElementRef, OnDestroy } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+import {
+  AngularFirestore,
+  AngularFirestoreCollection
+} from 'angularfire2/firestore';
 import * as moment from 'moment';
 import * as vis from 'vis';
 
@@ -58,29 +61,29 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
     this.itemPortfolioPush = this.db
       .collection('users')
       .doc(this.auth.auth.currentUser.uid)
-      .collection('totalByTime', ref =>  ref.orderBy('date', 'desc').limit(1));
+      .collection('totalByTime', ref => ref.orderBy('date', 'desc').limit(1));
     this.pushSubscribe = this.itemPortfolioPush
       .valueChanges()
       .subscribe((changes: [{ date; totalForTime }]) => {
         changes.forEach(c => {
-          console.log('push' + moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm:ss'));
-
           this.dataset.add({
             x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm:ss'),
             y: Number(Math.ceil(c.totalForTime))
           });
         });
+        this.options.end = this.dataset.max('x')['x'];
+        this.graph2d.setWindow(this.options);
       });
   }
 
   /**
-   * Recupere TOUTES les données presente dans firebase et init le Dataset
+   * Recupere les 300 derniéres données les données presente dans firebase et init le Dataset
    */
   private setPortfolioGraphInit() {
     this.itemPortfolioInit = this.db
       .collection('users')
       .doc(this.auth.auth.currentUser.uid)
-      .collection('totalByTime');
+      .collection('totalByTime', ref => ref.orderBy('date', 'desc').limit(300));
     // this.itemPortfolioInit = this.db.collection('/portfolio/totalByTime');
     // Get all value from firebase, only once (take(1)), the next subscribe  listen for new element
     this.itemPortfolioInit
@@ -93,6 +96,9 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
             y: Number(Math.ceil(c.totalForTime))
           });
         });
+        this.options.start = this.dataset.min('x')['x'];
+        this.options.end = this.dataset.max('x')['x'];
+        this.graph2d.setOptions(this.options);
       });
   }
 
