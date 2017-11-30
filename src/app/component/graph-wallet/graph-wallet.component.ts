@@ -41,7 +41,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
     this.options = {
       moveable: true,
       zoomable: true,
-      height: '400px',
+      height: '500px',
       width: '800px'
     };
     // Create a graph2d

@@ -1,4 +1,9 @@
 :host {
   text-align: center;
 }
-
+/* TODO change that, need 100% width */
+.text-center {
+  margin-left: auto;
+  margin-right: auto;
+  display: inline-block;
+}
