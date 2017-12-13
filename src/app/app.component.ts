@@ -34,7 +34,6 @@ export class AppComponent {
       this.navigationInterceptor(event);
     });
   }
-
   // Shows and hides the loading spinner during RouterEvent changes
   navigationInterceptor(event: RouterEvent): void {
     if (event instanceof NavigationStart) {
