@@ -1,18 +1,12 @@
-import { Observable } from 'rxjs/Rx';
-import { Component, AfterViewInit, ElementRef, OnDestroy } from '@angular/core';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/take';
-import 'rxjs/add/operator/last';
 import {
-  AngularFireDatabase,
-  AngularFireList,
-  SnapshotAction,
-  AngularFireAction,
-  ChildEvent
-} from 'angularfire2/database';
-import * as vis from 'vis';
-import * as moment from 'moment';
-import { AuthService } from './services/auth.service';
+  Router,
+  Event as RouterEvent,
+  NavigationStart,
+  NavigationEnd,
+  NavigationCancel,
+  NavigationError
+} from '@angular/router';
+import { Component } from '@angular/core';
 /**
  * TODO on this screen :
  * ** make graph look like stream but stop on rangechanged and start again when user go to end of data
@@ -23,8 +17,8 @@ import { AuthService } from './services/auth.service';
  *
  * TODO General :
  * ** add overview wallet, need change on working.js
- * ** add graph par monnaie, need change working.js
- * **
+ * ** add graph par monnaie, need change working.js, add date achat
+ * ** mettre tout les commentaires en Anglais
  */
 @Component({
   selector: 'app-root',
@@ -32,10 +26,29 @@ import { AuthService } from './services/auth.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  // Sets initial value to true to show loading spinner on first load
+  loading = true;
 
-  constructor(private authService: AuthService) {
+  constructor(private router: Router) {
+    router.events.subscribe((event: RouterEvent) => {
+      this.navigationInterceptor(event);
+    });
   }
-  logout() {
-    this.authService.logout();
+
+  // Shows and hides the loading spinner during RouterEvent changes
+  navigationInterceptor(event: RouterEvent): void {
+    if (event instanceof NavigationStart) {
+      this.loading = true;
+    }
+    if (event instanceof NavigationEnd) {
+      this.loading = false;
+    }
+    // Set loading state to false in both of the below events to hide the spinner in case a request fails
+    if (event instanceof NavigationCancel) {
+      this.loading = false;
+    }
+    if (event instanceof NavigationError) {
+      this.loading = false;
+    }
   }
 }

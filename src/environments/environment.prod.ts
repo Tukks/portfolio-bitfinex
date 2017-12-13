@@ -1,6 +1,6 @@
 
 export const environment = {
-  production: false,
+  production: true,
   firebase: {
     apiKey: 'AIzaSyDzjXA_Husm5-7vCjWuyBvTUuS8X7NASpc',
     authDomain: 'bitfinex-portfolio.firebaseapp.com',

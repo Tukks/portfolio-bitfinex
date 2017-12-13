@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
-
+import {NgForm} from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -11,8 +11,11 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./additional-info.component.css']
 })
 export class AdditionalInfoComponent implements OnInit {
-  privateKey = '';
-  publicKey = '';
+  // TODO load privatekey and public key from database
+  // disable submit when empty
+  // explication sur que faut il mettre
+  // ajout bouton interface pour changer ses clés
+
   constructor(
     private authService: AuthService,
     private db: AngularFirestore,
@@ -22,11 +25,11 @@ export class AdditionalInfoComponent implements OnInit {
   }
 
   ngOnInit() {}
-  submit() {
+  submit(form: NgForm) {
     this.db
       .collection('users')
       .doc(this.auth.auth.currentUser.uid)
-      .set({ privateKey: this.privateKey, publicKey: this.publicKey })
+      .set({ privateKey: form.value.privateKey, publicKey: form.value.publicKey })
       .then(() => {
         this.router.navigate(['wallet']);
       });

@@ -1,15 +1,3 @@
-<nav class="navbar navbar-expand-md bg-dark navbar-dark">
-  <div class="container">
-    <a class="navbar-brand" href="#">Portfolio</a>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-item nav-link" routerLink="/wallet" routerLinkActive="active">Overview
-        </a>
-        <a class="nav-item nav-link disabled">By Currency
-        </a>
-      </div>
-    </div>
-    <button class="btn btn-sm align-middle btn-outline-secondary" type="button" (click)="logout()">Logout</button>
-  </div>
-</nav>
-<router-outlet></router-outlet>
+<app-menu></app-menu>
+<router-outlet [hidden]="loading"></router-outlet>
+<p [hidden]="!loading" class="text-center">Loading Data...</p>

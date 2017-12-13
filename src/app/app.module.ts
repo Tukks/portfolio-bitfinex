@@ -11,15 +11,19 @@ import { AppRoutes } from './app.route';
 import { AdditionalInfoComponent } from './component/additional-info/additional-info.component';
 import { GraphWalletComponent } from './component/graph-wallet/graph-wallet.component';
 import { LoginComponent } from './component/login/login.component';
-import { AuthGuard } from './services/auth-guard';
+import { AuthGuard } from './guards/auth-guard';
 import { AuthService } from './services/auth.service';
+import { MenuComponent } from './component/menu/menu.component';
+import { OverviewResolve } from './resolver/overview.resolve';
+import { CurrencyResolve } from './resolver/currency.resolve';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     GraphWalletComponent,
-    AdditionalInfoComponent
+    AdditionalInfoComponent,
+    MenuComponent
   ],
   imports: [
     BrowserModule,
@@ -29,7 +33,7 @@ import { AuthService } from './services/auth.service';
     AngularFireAuthModule,
     FormsModule
   ],
-  providers: [AuthService, AuthGuard],
+  providers: [AuthService, AuthGuard, OverviewResolve, CurrencyResolve],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

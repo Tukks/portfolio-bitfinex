@@ -3,17 +3,17 @@
 <div class="row">
   <div class="col">
   </div>
-  <div class="col mt-2 text-center">
+  <form #f="ngForm" class="col mt-2 text-center" (ngSubmit)="submit(f)">
     <h1>Who Are You?</h1>
     <div class="input-group">
-      <input type="text" class="form-control" placeholder="Public Key" aria-label="Public Key" aria-describedby="basic-addon1"  [(ngModel)]="publicKey">
+      <input type="text" class="form-control" placeholder="Public Key" aria-label="Public Key" aria-describedby="basic-addon1" ngModel name="publicKey">
     </div>
     <br>
     <div class="input-group">
-      <input type="text" class="form-control" placeholder="Private key" aria-label="Private key" aria-describedby="basic-addon2" [(ngModel)]="privateKey">
+      <input type="text" class="form-control" placeholder="Private key" aria-label="Private key" aria-describedby="basic-addon2" ngModel name="privateKey">
     </div>
-    <input class="btn btn-primary mt-3" type="submit" value="Submit" (click)="submit()">
-  </div>
+    <input class="btn btn-primary mt-3" type="submit" value="Submit">
+  </form>
   <div class="col">
   </div>
 </div>
