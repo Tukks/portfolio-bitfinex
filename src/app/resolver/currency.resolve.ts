@@ -1,21 +1,37 @@
 import { Injectable } from '@angular/core';
-import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
+import { Resolve, ActivatedRouteSnapshot, ActivatedRoute } from '@angular/router';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFireDatabase } from 'angularfire2/database';
+import 'rxjs/add/operator/take';
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class CurrencyResolve implements Resolve<any> {
-  constructor(private db: AngularFirestore, private auth: AngularFireAuth) {}
-  getPushSubscribe() {
+  constructor(
+    private auth: AngularFireAuth,
+    private dbFb: AngularFireDatabase
+  ) {}
 
+  getPushSubscribe(currency: string): Observable<any> {
+    return this.dbFb
+      .list(
+        'users/' +
+          this.auth.auth.currentUser.uid +
+          '/menu/' +
+          currency,
+        ref => ref.orderByChild('date').limitToLast(1)
+      )
+      .valueChanges();
   }
+
   resolve(route: ActivatedRouteSnapshot) {
-    return this.db
-      .collection('users')
-      .doc(this.auth.auth.currentUser.uid)
-      .collection('currency')
-      .doc(route.paramMap.get('currency'))
-      .collection('total', ref => ref.orderBy('date', 'desc').limit(300))
+    return this.dbFb
+      .list(
+        'users/' +
+          this.auth.auth.currentUser.uid +
+          '/menu/' +
+          route.paramMap.get('currency')
+      )
       .valueChanges()
       .take(1);
   }

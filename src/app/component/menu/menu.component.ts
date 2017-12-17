@@ -2,6 +2,7 @@ import { AuthService } from './../../services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFireDatabase } from 'angularfire2/database';
 
 @Component({
   selector: 'app-menu',
@@ -11,18 +12,25 @@ import { AngularFireAuth } from 'angularfire2/auth';
 export class MenuComponent {
   menuCurrency: string[] = [];
 
-  constructor(private db: AngularFirestore, private auth: AngularFireAuth, private authService: AuthService) {
+  constructor(
+    private auth: AngularFireAuth,
+    private authService: AuthService,
+    private dbFb: AngularFireDatabase
+  ) {
     // TODO charger ce composant seulement quand l'utilisateur est authentifier
-    this.auth.authState.subscribe(test => {
-      let t = this.db
-        .collection('users')
-        .doc(this.auth.auth.currentUser.uid)
-        .collection('currency');
-      t.ref.get().then(changes => {
-        changes.forEach(c => {
-          this.menuCurrency.push(c.id);
+    this.auth.authState.subscribe(() => {
+      this.dbFb
+        .list('users/' + this.auth.auth.currentUser.uid + '/menu')
+        .snapshotChanges()
+        .take(1)
+        .subscribe(menuItems => {
+          menuItems.forEach(item => {
+            // TODO CHange That!!!!
+            if (item.key !== 'overview') {
+              this.menuCurrency.push(item.key);
+            }
+          });
         });
-      });
     });
   }
   logout() {

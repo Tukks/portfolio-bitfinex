@@ -25,7 +25,7 @@ export class LoginComponent {
           if (res.additionalUserInfo.isNewUser) {
             this.router.navigate(['/additional_info']);
           } else {
-            this.router.navigate(['wallet']);
+            this.router.navigate(['/graph/overview']);
           }
         });
       })
