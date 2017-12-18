@@ -1,15 +1,24 @@
 <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-    <div class="container">
-      <a class="navbar-brand" routerLink="">Portfolio</a>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a class="nav-item nav-link" routerLink="graph/overview" routerLinkActive="active">Overview
-          </a>
-          <a *ngFor="let item of menuCurrency" class="nav-item nav-link" routerLink="graph/{{item}}" routerLinkActive="active">
-            {{item}}
-          </a>
-        </div>
-      </div>
-      <button class="btn btn-sm align-middle btn-outline-secondary" type="button" (click)="logout()">Logout</button>
+
+
+  <a class="navbar-brand" routerLink="">Portfolio</a>
+
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+    aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+    <div class="navbar-nav">
+      <a class="nav-item nav-link" routerLink="graph/overview" routerLinkActive="active">Overview
+      </a>
+      <a *ngFor="let item of menuCurrency" class="nav-item nav-link" routerLink="graph/{{item}}" routerLinkActive="active">
+        {{item}}
+      </a>
     </div>
-  </nav>
+    <button class="btn btn-sm align-middle btn-outline-secondary ml-auto" type="button" (click)="logout()">Logout</button>
+
+  </div>
+
+
+</nav>

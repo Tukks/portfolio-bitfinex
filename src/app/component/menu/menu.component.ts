@@ -25,7 +25,7 @@ export class MenuComponent {
         .take(1)
         .subscribe(menuItems => {
           menuItems.forEach(item => {
-            // TODO CHange That!!!!
+            // TODO Change That!!!!
             if (item.key !== 'overview') {
               this.menuCurrency.push(item.key);
             }

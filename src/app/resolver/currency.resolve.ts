@@ -4,14 +4,13 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase } from 'angularfire2/database';
 import 'rxjs/add/operator/take';
 import { Observable } from 'rxjs/Observable';
-
+// TODO Caching
 @Injectable()
 export class CurrencyResolve implements Resolve<any> {
   constructor(
     private auth: AngularFireAuth,
     private dbFb: AngularFireDatabase
   ) {}
-
   getPushSubscribe(currency: string): Observable<any> {
     return this.dbFb
       .list(
