@@ -28,10 +28,13 @@ import { CurrencyResolve } from '../../resolver/currency.resolve';
 })
 export class GraphWalletComponent
   implements AfterViewInit, OnInit, OnDestroy, OnChanges {
-  title = 'Overview';
+  objectKeys = Object.keys;
+
+  title = 'Overview'; 
   // itemPortfolioPush: AngularFirestoreCollection<any>;
   pushSubscribe: Subscription;
   graph2d: any;
+  statistique = {};
   dataset = new vis.DataSet({});
   container: HTMLElement;
   sub;
@@ -42,7 +45,7 @@ export class GraphWalletComponent
     moveable: true,
     zoomable: true,
     height: '500px',
-    width: '800px'
+    width: '100%'
   };
   constructor(
     private auth: AngularFireAuth,
@@ -58,7 +61,7 @@ export class GraphWalletComponent
       this.setPortfolioGraphPush(this.route.snapshot.paramMap.get('currency'));
     });
   }
-  ngOnInit() {}
+  ngOnInit() { }
   ngOnChanges(changes: SimpleChanges): void {
     console.log(changes);
   }
@@ -81,6 +84,13 @@ export class GraphWalletComponent
           y: Number(Math.ceil(c.total))
         });
       });
+      this.statistique = {
+      day: this.calcPercentage('day'),
+      week: this.calcPercentage('week'),
+      month: this.calcPercentage('month'),
+      year: this.calcPercentage('year'),
+      all: this.calcPercentage('all')
+    };
     });
   }
 
@@ -89,21 +99,47 @@ export class GraphWalletComponent
    * TODO a typer
    */
   private setPortfolioGraphInit(data) {
-    let dataSetTmp = [];
-    data.forEach(c => {
-      dataSetTmp.push({
+    let dataSetTmp = data.map(c => {
+      return {
         x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm:ss'),
         y: Number(Math.ceil(c.total))
-      });
+      };
     });
     this.dataset.add(dataSetTmp);
+    this.statistique = {
+      day: this.calcPercentage('day'),
+      week: this.calcPercentage('week'),
+      month: this.calcPercentage('month'),
+      year: this.calcPercentage('year'),
+      all: this.calcPercentage('all')
+    };
     // Create a graph2d
-   // this.options.start = this.dataset.min('x')['x'];
+    // this.options.start = this.dataset.min('x')['x'];
     // this.options.end = this.dataset.max('x')['x'];
   }
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
     // this.pushSubscribe.unsubscribe();
+  }
+
+  private calcPercentage(type: 'day' | 'week' | 'month' | 'year' | 'all') {
+    let filteredDataSet = new vis.DataSet(this.dataset.get({
+      filter: function (item) {
+        if (type !== 'all') {
+          return moment(item.x).isSame(moment(), type);
+        } else {
+          return item;
+        }
+      }
+    }));
+    let max = filteredDataSet.max('x');
+    let min = filteredDataSet.min('x');
+    if (max && min) {
+      return {
+        percentage: Number(Math.ceil(((max['y'] - min['y']) / min['y']) * 100)),
+        total: max['y'] - min['y']
+      }
+    }
   }
 }
