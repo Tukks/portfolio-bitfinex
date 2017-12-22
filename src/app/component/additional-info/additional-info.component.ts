@@ -8,7 +8,7 @@ import { AngularFireDatabase } from 'angularfire2/database';
 @Component({
   selector: 'app-additional-info',
   templateUrl: './additional-info.component.html',
-  styleUrls: ['./additional-info.component.css']
+  styleUrls: ['./additional-info.component.scss']
 })
 export class AdditionalInfoComponent implements OnInit {
   // TODO load privatekey and public key from database

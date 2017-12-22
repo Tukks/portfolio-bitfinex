@@ -13,11 +13,8 @@ import { Component } from '@angular/core';
  * (ou juste un bouton pour revenir a l'état stream)
  * http://visjs.org/examples/graph2d/15_streaming_data.html
  * ** on event rangechanged load more data in past
- * ** ne pas charger toutes les données d'un coup, on va limiter a 1 semaines
  *
  * TODO General :
- * ** add overview wallet, need change on working.js
- * ** add graph par monnaie, need change working.js, add date achat
  * ** mettre tout les commentaires en Anglais
  */
 @Component({

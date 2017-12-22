@@ -16,6 +16,7 @@ import { AuthGuard } from './guards/auth-guard';
 import { AuthService } from './services/auth.service';
 import { MenuComponent } from './component/menu/menu.component';
 import { CurrencyResolve } from './resolver/currency.resolve';
+import { CapitalizePipe } from './pipe/capitalize.pipe';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { CurrencyResolve } from './resolver/currency.resolve';
     LoginComponent,
     GraphWalletComponent,
     AdditionalInfoComponent,
-    MenuComponent
+    MenuComponent,
+    CapitalizePipe
   ],
   imports: [
     BrowserModule,

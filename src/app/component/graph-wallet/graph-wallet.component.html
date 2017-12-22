@@ -1,11 +1,14 @@
 <div>
-  <h1>{{title}}</h1> 
+  <h1>{{title | capitalize}}</h1>
   <div id="container" class="cols">
-      <div *ngFor="let key of objectKeys(statistique)" class="box">{{key + ' : ' + statistique[key]?.percentage}} %</div>
+    <div  *ngFor="let key of objectKeys(statistique)" class="shortcut-button">
+      <span class="title">{{key | capitalize}}</span>
+      <span class="data percentage">{{statistique[key]?.percentage}} %</span>
+      <span class="data total">{{statistique[key]?.total}} $</span>
     </div>
+  </div>
+
   <div class="row text-center w-100">
     <div id='graph'></div>
   </div>
 </div>
-
-  

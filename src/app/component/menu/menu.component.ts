@@ -7,7 +7,7 @@ import { AngularFireDatabase } from 'angularfire2/database';
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.css']
+  styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent {
   menuCurrency: string[] = [];

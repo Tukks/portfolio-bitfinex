@@ -24,13 +24,13 @@ import { CurrencyResolve } from '../../resolver/currency.resolve';
 @Component({
   selector: 'app-graph-wallet',
   templateUrl: './graph-wallet.component.html',
-  styleUrls: ['./graph-wallet.component.css']
+  styleUrls: ['./graph-wallet.component.scss']
 })
 export class GraphWalletComponent
   implements AfterViewInit, OnInit, OnDestroy, OnChanges {
   objectKeys = Object.keys;
 
-  title = 'Overview'; 
+  title = 'Overview';
   // itemPortfolioPush: AngularFirestoreCollection<any>;
   pushSubscribe: Subscription;
   graph2d: any;
@@ -40,6 +40,7 @@ export class GraphWalletComponent
   sub;
   // Configuration for the Graph
   options: any = {
+    yAxisOrientation: 'right',
     autoResize: false,
     drawPoints: false,
     moveable: true,
@@ -61,14 +62,19 @@ export class GraphWalletComponent
       this.setPortfolioGraphPush(this.route.snapshot.paramMap.get('currency'));
     });
   }
-  ngOnInit() { }
+  ngOnInit() {}
   ngOnChanges(changes: SimpleChanges): void {
     console.log(changes);
   }
   /************************ Graph ************************/
   ngAfterViewInit() {
     this.container = document.getElementById('graph');
-    this.graph2d = new vis.Graph2d(this.container, this.dataset, this.options);
+    let groups = new vis.DataSet();
+    groups.add({
+      id: 0,
+      style: 'stroke: #C6D4FF;',
+      });
+    this.graph2d = new vis.Graph2d(this.container, this.dataset, groups, this.options);
   }
   /************************ Data ************************/
 
@@ -81,16 +87,11 @@ export class GraphWalletComponent
       last.forEach(c => {
         this.dataset.add({
           x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm:ss'),
-          y: Number(Math.ceil(c.total))
+          y: Number(Math.ceil(c.total)),
+          group: 0
         });
       });
-      this.statistique = {
-      day: this.calcPercentage('day'),
-      week: this.calcPercentage('week'),
-      month: this.calcPercentage('month'),
-      year: this.calcPercentage('year'),
-      all: this.calcPercentage('all')
-    };
+      this.calcStatistique();
     });
   }
 
@@ -102,10 +103,43 @@ export class GraphWalletComponent
     let dataSetTmp = data.map(c => {
       return {
         x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm:ss'),
-        y: Number(Math.ceil(c.total))
+        y: Number(Math.ceil(c.total)),
+        group: 0
       };
     });
     this.dataset.add(dataSetTmp);
+    this.calcStatistique();
+
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
+    this.pushSubscribe.unsubscribe();
+  }
+
+  private calcPercentage(type: 'day' | 'week' | 'month' | 'year' | 'all') {
+    let filteredDataSet = new vis.DataSet(
+      this.dataset.get({
+        filter: function(item) {
+          if (type !== 'all') {
+            return moment(item.x).isSame(moment(), type);
+          } else {
+            return item;
+          }
+        }
+      })
+    );
+    let max = filteredDataSet.max('x');
+    let min = filteredDataSet.min('x');
+    if (max && min) {
+      return {
+        percentage: Number(Math.ceil((max['y'] - min['y']) / min['y'] * 100)),
+        total: max['y'] - min['y']
+      };
+    }
+  }
+
+  private calcStatistique() {
     this.statistique = {
       day: this.calcPercentage('day'),
       week: this.calcPercentage('week'),
@@ -113,33 +147,5 @@ export class GraphWalletComponent
       year: this.calcPercentage('year'),
       all: this.calcPercentage('all')
     };
-    // Create a graph2d
-    // this.options.start = this.dataset.min('x')['x'];
-    // this.options.end = this.dataset.max('x')['x'];
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-    // this.pushSubscribe.unsubscribe();
-  }
-
-  private calcPercentage(type: 'day' | 'week' | 'month' | 'year' | 'all') {
-    let filteredDataSet = new vis.DataSet(this.dataset.get({
-      filter: function (item) {
-        if (type !== 'all') {
-          return moment(item.x).isSame(moment(), type);
-        } else {
-          return item;
-        }
-      }
-    }));
-    let max = filteredDataSet.max('x');
-    let min = filteredDataSet.min('x');
-    if (max && min) {
-      return {
-        percentage: Number(Math.ceil(((max['y'] - min['y']) / min['y']) * 100)),
-        total: max['y'] - min['y']
-      }
-    }
   }
 }

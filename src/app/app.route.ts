@@ -5,7 +5,6 @@ import { GraphWalletComponent } from './component/graph-wallet/graph-wallet.comp
 import { AdditionalInfoComponent } from './component/additional-info/additional-info.component';
 import { AuthGuard } from './guards/auth-guard';
 import { CurrencyResolve } from './resolver/currency.resolve';
-// TODO CanLoad?
 export const router: Routes = [
   { path: '', redirectTo: 'graph/overview', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
