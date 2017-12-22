@@ -11,6 +11,10 @@ export class CurrencyResolve implements Resolve<any> {
     private auth: AngularFireAuth,
     private dbFb: AngularFireDatabase
   ) {}
+
+  removeCurrency(currency: string) {
+    // TODO et foutre en push le menu
+  }
   getPushSubscribe(currency: string): Observable<any> {
     return this.dbFb
       .list(

@@ -21,6 +21,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Data } from '@angular/router/src/config';
 import { CurrencyResolve } from '../../resolver/currency.resolve';
 // TODO check if value
+// TODO Supprimer données quand l'user n'en veut plus
 @Component({
   selector: 'app-graph-wallet',
   templateUrl: './graph-wallet.component.html',
@@ -121,7 +122,7 @@ export class GraphWalletComponent
     this.pushSubscribe.unsubscribe();
   }
 
-  private calcPercentage(type: 'day' | 'week' | 'month' | 'year' | 'all') {
+  private calcPercentage(type: 'hours' | 'day' | 'week' | 'month' | 'year' | 'all') {
     let filteredDataSet = new vis.DataSet(
       this.dataset.get({
         filter: function(item) {
@@ -150,6 +151,7 @@ export class GraphWalletComponent
     }
   private calcStatistique() {
     this.statistique = {
+      hours: this.calcPercentage('hours'),
       day: this.calcPercentage('day'),
       week: this.calcPercentage('week'),
       month: this.calcPercentage('month'),
