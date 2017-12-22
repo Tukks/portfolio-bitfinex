@@ -1,10 +1,11 @@
 <div>
   <h1>{{title | capitalize}}</h1>
+  <!-- TODO Create Component -->
   <div id="container" class="cols">
     <div  *ngFor="let key of objectKeys(statistique)" class="shortcut-button">
-      <span class="title">{{key | capitalize}}</span>
-      <span class="data percentage">{{statistique[key]?.percentage}} %</span>
-      <span class="data total">{{statistique[key]?.total}} $</span>
+      <span class="title">{{key | capitalize | last}}</span>
+      <span class="data percentage" [hidden]="!statistique[key]?.percentage">{{statistique[key]?.percentage | percentage}}</span>
+      <span class="data total">{{statistique[key]?.total | dollar}} </span>
     </div>
   </div>
 

@@ -17,6 +17,9 @@ import { AuthService } from './services/auth.service';
 import { MenuComponent } from './component/menu/menu.component';
 import { CurrencyResolve } from './resolver/currency.resolve';
 import { CapitalizePipe } from './pipe/capitalize.pipe';
+import { PercentagePipe } from './pipe/percentage.pipe';
+import { DollarPipe } from './pipe/dollar.pipe';
+import { LastPipe } from './pipe/last.pipe';
 
 @NgModule({
   declarations: [
@@ -25,7 +28,10 @@ import { CapitalizePipe } from './pipe/capitalize.pipe';
     GraphWalletComponent,
     AdditionalInfoComponent,
     MenuComponent,
-    CapitalizePipe
+    CapitalizePipe,
+    PercentagePipe,
+    DollarPipe,
+    LastPipe
   ],
   imports: [
     BrowserModule,

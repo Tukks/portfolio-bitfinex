@@ -27,17 +27,16 @@ import { CurrencyResolve } from '../../resolver/currency.resolve';
   styleUrls: ['./graph-wallet.component.scss']
 })
 export class GraphWalletComponent
-  implements AfterViewInit, OnInit, OnDestroy, OnChanges {
+  implements AfterViewInit, OnDestroy {
   objectKeys = Object.keys;
 
   title = 'Overview';
-  // itemPortfolioPush: AngularFirestoreCollection<any>;
   pushSubscribe: Subscription;
   graph2d: any;
   statistique = {};
   dataset = new vis.DataSet({});
   container: HTMLElement;
-  sub;
+  routeSubscription: Subscription;
   // Configuration for the Graph
   options: any = {
     yAxisOrientation: 'right',
@@ -55,16 +54,15 @@ export class GraphWalletComponent
     private route: ActivatedRoute,
     private resolver: CurrencyResolve
   ) {
-    this.sub = this.route.data.subscribe((data: Data) => {
+    this.routeSubscription = this.route.data.subscribe((data: Data) => {
+      if (this.pushSubscribe) {
+        this.pushSubscribe.unsubscribe();
+      }
       this.dataset.clear();
       this.setPortfolioGraphInit(data['wallet']);
       this.title = this.route.snapshot.paramMap.get('currency');
       this.setPortfolioGraphPush(this.route.snapshot.paramMap.get('currency'));
     });
-  }
-  ngOnInit() {}
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
   }
   /************************ Graph ************************/
   ngAfterViewInit() {
@@ -72,9 +70,14 @@ export class GraphWalletComponent
     let groups = new vis.DataSet();
     groups.add({
       id: 0,
-      style: 'stroke: #C6D4FF;',
-      });
-    this.graph2d = new vis.Graph2d(this.container, this.dataset, groups, this.options);
+      style: 'stroke: #C6D4FF;'
+    });
+    this.graph2d = new vis.Graph2d(
+      this.container,
+      this.dataset,
+      groups,
+      this.options
+    );
   }
   /************************ Data ************************/
 
@@ -83,16 +86,18 @@ export class GraphWalletComponent
    * les elements au dataset
    */
   private setPortfolioGraphPush(currency: string) {
-    this.resolver.getPushSubscribe(currency).subscribe(last => {
-      last.forEach(c => {
-        this.dataset.add({
-          x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm:ss'),
-          y: Number(Math.ceil(c.total)),
-          group: 0
+    this.pushSubscribe = this.resolver
+      .getPushSubscribe(currency)
+      .subscribe(last => {
+        last.forEach(c => {
+          this.dataset.add({
+            x: new Date(c.date),
+            y: Number(Math.ceil(c.total)),
+            group: 0
+          });
         });
+        this.calcStatistique();
       });
-      this.calcStatistique();
-    });
   }
 
   /**
@@ -102,18 +107,17 @@ export class GraphWalletComponent
   private setPortfolioGraphInit(data) {
     let dataSetTmp = data.map(c => {
       return {
-        x: moment(new Date(Number(c.date))).format('YYYY-MM-DD HH:mm:ss'),
+        x: new Date(c.date),
         y: Number(Math.ceil(c.total)),
         group: 0
       };
     });
     this.dataset.add(dataSetTmp);
     this.calcStatistique();
-
   }
 
   ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    this.routeSubscription.unsubscribe();
     this.pushSubscribe.unsubscribe();
   }
 
@@ -122,7 +126,7 @@ export class GraphWalletComponent
       this.dataset.get({
         filter: function(item) {
           if (type !== 'all') {
-            return moment(item.x).isSame(moment(), type);
+            return moment(item.x).isAfter(moment().subtract(1, type));
           } else {
             return item;
           }
@@ -138,14 +142,20 @@ export class GraphWalletComponent
       };
     }
   }
-
+  private calcTotalAsset () {
+    let max = this.dataset.max('x');
+    if (max) {
+      return { total : max['y'] };
+    }
+    }
   private calcStatistique() {
     this.statistique = {
       day: this.calcPercentage('day'),
       week: this.calcPercentage('week'),
       month: this.calcPercentage('month'),
       year: this.calcPercentage('year'),
-      all: this.calcPercentage('all')
+      all: this.calcPercentage('all'),
+      total: this.calcTotalAsset()
     };
   }
 }
