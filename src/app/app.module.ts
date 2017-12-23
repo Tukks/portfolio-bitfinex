@@ -20,7 +20,11 @@ import { CapitalizePipe } from './pipe/capitalize.pipe';
 import { PercentagePipe } from './pipe/percentage.pipe';
 import { DollarPipe } from './pipe/dollar.pipe';
 import { LastPipe } from './pipe/last.pipe';
-
+/**
+ * building and deploy :
+ * ng build --aot --output-hashing=all
+ * firebase deploy
+ */
 @NgModule({
   declarations: [
     AppComponent,

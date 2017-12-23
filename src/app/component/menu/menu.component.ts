@@ -13,17 +13,16 @@ export class MenuComponent {
   menuCurrency: string[] = [];
 
   constructor(
-    private auth: AngularFireAuth,
+    public auth: AngularFireAuth,
     private authService: AuthService,
     private dbFb: AngularFireDatabase
   ) {
-    // TODO charger ce composant seulement quand l'utilisateur est authentifier
-    this.auth.authState.subscribe(() => {
+    this.auth.authState.filter(state => state !== null).subscribe(user => {
       this.dbFb
-        .list('users/' + this.auth.auth.currentUser.uid + '/menu')
+        .list('users/' + user.uid + '/menu')
         .snapshotChanges()
-        .take(1)
         .subscribe(menuItems => {
+          this.menuCurrency = [];
           menuItems.forEach(item => {
             // TODO Change That!!!!
             if (item.key !== 'overview') {

@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Resolve, ActivatedRouteSnapshot, ActivatedRoute } from '@angular/router';
+import {
+  Resolve,
+  ActivatedRouteSnapshot,
+  ActivatedRoute
+} from '@angular/router';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase } from 'angularfire2/database';
 import 'rxjs/add/operator/take';
@@ -12,16 +16,15 @@ export class CurrencyResolve implements Resolve<any> {
     private dbFb: AngularFireDatabase
   ) {}
 
-  removeCurrency(currency: string) {
-    // TODO et foutre en push le menu
+  removeCurrency(currency: string): Promise<void> {
+    return this.dbFb
+      .list('users/' + this.auth.auth.currentUser.uid + '/menu/' + currency)
+      .remove();
   }
   getPushSubscribe(currency: string): Observable<any> {
     return this.dbFb
       .list(
-        'users/' +
-          this.auth.auth.currentUser.uid +
-          '/menu/' +
-          currency,
+        'users/' + this.auth.auth.currentUser.uid + '/menu/' + currency,
         ref => ref.orderByChild('date').limitToLast(1)
       )
       .valueChanges();

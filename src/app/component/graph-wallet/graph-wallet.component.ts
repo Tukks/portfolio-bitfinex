@@ -9,15 +9,17 @@ import {
   OnDestroy,
   OnChanges,
   OnInit,
-  SimpleChanges
+  SimpleChanges,
+  ViewChild
 } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as moment from 'moment';
 import * as vis from 'vis';
+declare var jQuery: any;
 
 import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Data } from '@angular/router/src/config';
 import { CurrencyResolve } from '../../resolver/currency.resolve';
 // TODO check if value
@@ -27,8 +29,7 @@ import { CurrencyResolve } from '../../resolver/currency.resolve';
   templateUrl: './graph-wallet.component.html',
   styleUrls: ['./graph-wallet.component.scss']
 })
-export class GraphWalletComponent
-  implements AfterViewInit, OnDestroy {
+export class GraphWalletComponent implements AfterViewInit, OnDestroy {
   objectKeys = Object.keys;
 
   title = 'Overview';
@@ -53,7 +54,8 @@ export class GraphWalletComponent
     private element: ElementRef,
     private authService: AuthService,
     private route: ActivatedRoute,
-    private resolver: CurrencyResolve
+    private resolver: CurrencyResolve,
+    private router: Router
   ) {
     this.routeSubscription = this.route.data.subscribe((data: Data) => {
       if (this.pushSubscribe) {
@@ -116,13 +118,24 @@ export class GraphWalletComponent
     this.dataset.add(dataSetTmp);
     this.calcStatistique();
   }
-
+  // TODO Catch
+  public removeData(currency: string) {
+    this.resolver
+      .removeCurrency('currency')
+      .then(() => {
+        jQuery('#removeModal').modal('hide');
+        this.router.navigate(['']);
+      })
+      .catch(() => null);
+  }
   ngOnDestroy(): void {
     this.routeSubscription.unsubscribe();
     this.pushSubscribe.unsubscribe();
   }
 
-  private calcPercentage(type: 'hours' | 'day' | 'week' | 'month' | 'year' | 'all') {
+  private calcPercentage(
+    type: 'hours' | 'day' | 'week' | 'month' | 'year' | 'all'
+  ) {
     let filteredDataSet = new vis.DataSet(
       this.dataset.get({
         filter: function(item) {
@@ -143,12 +156,12 @@ export class GraphWalletComponent
       };
     }
   }
-  private calcTotalAsset () {
+  private calcTotalAsset() {
     let max = this.dataset.max('x');
     if (max) {
-      return { total : max['y'] };
+      return { total: max['y'] };
     }
-    }
+  }
   private calcStatistique() {
     this.statistique = {
       hours: this.calcPercentage('hours'),
