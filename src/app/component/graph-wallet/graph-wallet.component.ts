@@ -2,34 +2,20 @@ import 'rxjs/add/operator/last';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/take';
 
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
-import { AngularFireAuth } from 'angularfire2/auth';
-import * as moment from 'moment';
-import * as vis from 'vis';
-declare var jQuery: any;
-
-import { AuthService } from '../../services/auth.service';
-import { Subscription } from 'rxjs';
+import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Data } from '@angular/router/src/config';
+import { Subscription } from 'rxjs';
+import * as vis from 'vis';
+
 import { CurrencyResolve } from '../../resolver/currency.resolve';
-import {
-  calcPercentage,
-  calcMinMax,
-  getFirst,
-  calcTotalAsset
-} from '../../utils/stat-utils';
+import { calcMinMax, calcPercentage, calcTotalAsset, getFirst } from '../../utils/stat-utils';
+
+declare var jQuery: any;
+
 // TODO check if value
-// TODO Supprimer données quand l'user n'en veut plus
+// TODO Supprimer les données de date a date
+// TODO date sur mobile bug
 @Component({
   selector: 'app-graph-wallet',
   templateUrl: './graph-wallet.component.html',
@@ -54,9 +40,6 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
     width: '100%'
   };
   constructor(
-    private auth: AngularFireAuth,
-    private element: ElementRef,
-    private authService: AuthService,
     private route: ActivatedRoute,
     private resolver: CurrencyResolve,
     private router: Router
@@ -77,7 +60,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
     let groups = new vis.DataSet();
     groups.add({
       id: 0,
-      style: 'stroke: #C6D4FF;'
+      style: 'stroke: #1f9e9a;'
     });
     this.graph2d = new vis.Graph2d(
       this.container,
@@ -142,6 +125,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
       last_hours: calcPercentage(this.dataset, 'hours'),
       last_day: calcPercentage(this.dataset, 'day'),
       last_week: calcPercentage(this.dataset, 'week'),
+      last_month: calcPercentage(this.dataset, 'month'),
       all: calcPercentage(this.dataset, 'all'),
       acquisition_cost: getFirst(this.dataset),
       MIN: calcMinMax(this.dataset, 'min'),
