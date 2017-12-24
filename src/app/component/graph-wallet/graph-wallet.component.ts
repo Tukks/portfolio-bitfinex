@@ -22,6 +22,12 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Data } from '@angular/router/src/config';
 import { CurrencyResolve } from '../../resolver/currency.resolve';
+import {
+  calcPercentage,
+  calcMinMax,
+  getFirst,
+  calcTotalAsset
+} from '../../utils/stat-utils';
 // TODO check if value
 // TODO Supprimer données quand l'user n'en veut plus
 @Component({
@@ -30,8 +36,6 @@ import { CurrencyResolve } from '../../resolver/currency.resolve';
   styleUrls: ['./graph-wallet.component.scss']
 })
 export class GraphWalletComponent implements AfterViewInit, OnDestroy {
-  objectKeys = Object.keys;
-
   title = 'Overview';
   pushSubscribe: Subscription;
   graph2d: any;
@@ -111,7 +115,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
     let dataSetTmp = data.map(c => {
       return {
         x: new Date(c.date),
-        y: Number(Math.ceil(c.total)),
+        y: Number.parseFloat(c.total),
         group: 0
       };
     });
@@ -121,7 +125,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
   // TODO Catch
   public removeData(currency: string) {
     this.resolver
-      .removeCurrency('currency')
+      .removeCurrency(currency)
       .then(() => {
         jQuery('#removeModal').modal('hide');
         this.router.navigate(['']);
@@ -133,44 +137,16 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
     this.pushSubscribe.unsubscribe();
   }
 
-  private calcPercentage(
-    type: 'hours' | 'day' | 'week' | 'month' | 'year' | 'all'
-  ) {
-    let filteredDataSet = new vis.DataSet(
-      this.dataset.get({
-        filter: function(item) {
-          if (type !== 'all') {
-            return moment(item.x).isAfter(moment().subtract(1, type));
-          } else {
-            return item;
-          }
-        }
-      })
-    );
-    let max = filteredDataSet.max('x');
-    let min = filteredDataSet.min('x');
-    if (max && min) {
-      return {
-        percentage: Number(Math.ceil((max['y'] - min['y']) / min['y'] * 100)),
-        total: max['y'] - min['y']
-      };
-    }
-  }
-  private calcTotalAsset() {
-    let max = this.dataset.max('x');
-    if (max) {
-      return { total: max['y'] };
-    }
-  }
   private calcStatistique() {
     this.statistique = {
-      hours: this.calcPercentage('hours'),
-      day: this.calcPercentage('day'),
-      week: this.calcPercentage('week'),
-      month: this.calcPercentage('month'),
-      year: this.calcPercentage('year'),
-      all: this.calcPercentage('all'),
-      total: this.calcTotalAsset()
+      last_hours: calcPercentage(this.dataset, 'hours'),
+      last_day: calcPercentage(this.dataset, 'day'),
+      last_week: calcPercentage(this.dataset, 'week'),
+      all: calcPercentage(this.dataset, 'all'),
+      acquisition_cost: getFirst(this.dataset),
+      MIN: calcMinMax(this.dataset, 'min'),
+      MAX: calcMinMax(this.dataset, 'max'),
+      total: calcTotalAsset(this.dataset)
     };
   }
 }

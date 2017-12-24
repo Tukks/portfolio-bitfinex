@@ -20,6 +20,7 @@ import { CapitalizePipe } from './pipe/capitalize.pipe';
 import { PercentagePipe } from './pipe/percentage.pipe';
 import { DollarPipe } from './pipe/dollar.pipe';
 import { LastPipe } from './pipe/last.pipe';
+import { TileComponent } from './component/tile/tile.component';
 /**
  * building and deploy :
  * ng build --aot --output-hashing=all
@@ -35,7 +36,8 @@ import { LastPipe } from './pipe/last.pipe';
     CapitalizePipe,
     PercentagePipe,
     DollarPipe,
-    LastPipe
+    LastPipe,
+    TileComponent
   ],
   imports: [
     BrowserModule,

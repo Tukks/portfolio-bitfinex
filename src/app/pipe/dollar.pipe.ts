@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { isNullNumber } from '../utils/value-utils';
 
 @Pipe({
   name: 'dollar'
@@ -6,7 +7,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class DollarPipe implements PipeTransform {
 
   transform(value: any, args?: any): any {
-    if (value) {
+    if (!isNullNumber(value)) {
       return value + '$';
     }
     return value;

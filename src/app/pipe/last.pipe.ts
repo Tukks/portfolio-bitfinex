@@ -4,12 +4,10 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'last'
 })
 export class LastPipe implements PipeTransform {
-
   transform(value: string, args?: any): any {
-    if (value && value.toLowerCase() !== 'all' && value.toLowerCase() !== 'total') {
-      return 'Last ' + value;
+    if (value) {
+      return value.split('_').join(' ');
     }
     return value;
   }
-
 }

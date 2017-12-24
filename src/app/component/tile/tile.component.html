@@ -1,0 +1,7 @@
+<div id="container" class="cols">
+  <div *ngFor="let key of objectKeys(data)" class="shortcut-button">
+    <span class="title">{{key | capitalize | last}}</span>
+    <span class="data percentage" [hidden]="isNull(data[key]?.first)">{{data[key]?.first}}</span>
+    <span class="data total">{{data[key]?.second}} </span>
+  </div>
+</div>
