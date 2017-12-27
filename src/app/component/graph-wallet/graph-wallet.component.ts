@@ -37,7 +37,14 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
     moveable: true,
     zoomable: true,
     height: '500px',
-    width: '100%'
+    width: '100%',
+    dataAxis : {
+      right : {
+        format: function (value) {
+          return value;
+        }
+      }
+    }
   };
   constructor(
     private route: ActivatedRoute,
