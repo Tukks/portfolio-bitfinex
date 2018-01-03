@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Data } from '@angular/router/src/config';
 import { Subscription } from 'rxjs';
 import * as vis from 'vis';
+import * as moment from 'moment';
 
 import { CurrencyResolve } from '../../resolver/currency.resolve';
 import { calcMinMax, calcPercentage, calcTotalAsset, getFirst } from '../../utils/stat-utils';
@@ -37,7 +38,8 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
     moveable: true,
     zoomable: true,
     height: '500px',
-    width: '100%'
+    width: '100%',
+    min: moment().subtract(1,'week')
   };
   constructor(
     private route: ActivatedRoute,
@@ -82,7 +84,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
         last.forEach(c => {
           this.dataset.add({
             x: new Date(c.date),
-            y: Number(Math.ceil(c.total)),
+            y: Number.parseFloat(c.total),
             group: 0
           });
         });
@@ -120,7 +122,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
     this.pushSubscribe.unsubscribe();
   }
 
-  private calcStatistique() {
+  private async calcStatistique() {
     this.statistique = {
       last_hours: calcPercentage(this.dataset, 'hours'),
       last_day: calcPercentage(this.dataset, 'day'),
