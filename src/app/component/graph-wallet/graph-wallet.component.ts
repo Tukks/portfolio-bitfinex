@@ -39,7 +39,14 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
     zoomable: true,
     height: '500px',
     width: '100%',
-    min: moment().subtract(1,'week')
+    min: moment().subtract(1,'week'),
+    dataAxis : {
+      right : {
+        format: function (value) {
+          return value;
+        }
+      }
+    }
   };
   constructor(
     private route: ActivatedRoute,
