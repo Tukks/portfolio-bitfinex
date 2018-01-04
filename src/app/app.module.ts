@@ -21,6 +21,7 @@ import { PercentagePipe } from './pipe/percentage.pipe';
 import { DollarPipe } from './pipe/dollar.pipe';
 import { LastPipe } from './pipe/last.pipe';
 import { TileComponent } from './component/tile/tile.component';
+import { DateUnixPipe } from './pipe/date-unix.pipe';
 /**
  * building and deploy :
  * ng build --aot --output-hashing=all
@@ -37,7 +38,8 @@ import { TileComponent } from './component/tile/tile.component';
     PercentagePipe,
     DollarPipe,
     LastPipe,
-    TileComponent
+    TileComponent,
+    DateUnixPipe
   ],
   imports: [
     BrowserModule,

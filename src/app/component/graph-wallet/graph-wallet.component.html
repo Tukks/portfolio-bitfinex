@@ -45,12 +45,11 @@
     </thead>
     <tbody>
       <tr *ngFor="let history of historys | async; let i = index">
-        <th scope="row">{{i}}</th>
         <td>{{history.currency}}</td>
         <td>{{history.description}}</td>
         <td>{{history.balance}}</td>
         <td>{{history.amount}}</td>
-        <td>{{history.timestamps}}</td>
+        <td>{{history.timestamp | dateUnix}}</td>
       </tr>      
     </tbody>
   </table>
