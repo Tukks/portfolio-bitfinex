@@ -21,6 +21,11 @@ export class CurrencyResolve implements Resolve<any> {
       .list('users/' + this.auth.auth.currentUser.uid + '/menu/' + currency)
       .remove();
   }
+  getHistory(currency: string): Observable<any> {
+    return this.dbFb
+      .object('users/' + this.auth.auth.currentUser.uid + '/history/' + currency)
+      .valueChanges();
+  }
   getPushSubscribe(currency: string): Observable<any> {
     return this.dbFb
       .list(

@@ -11,6 +11,7 @@ import * as moment from 'moment';
 
 import { CurrencyResolve } from '../../resolver/currency.resolve';
 import { calcMinMax, calcPercentage, calcTotalAsset, getFirst } from '../../utils/stat-utils';
+import { Observable } from 'rxjs/Observable';
 
 declare var jQuery: any;
 
@@ -23,6 +24,7 @@ declare var jQuery: any;
   styleUrls: ['./graph-wallet.component.scss']
 })
 export class GraphWalletComponent implements AfterViewInit, OnDestroy {
+  historys: Observable<any[]>;
   title = 'Overview';
   pushSubscribe: Subscription;
   graph2d: any;
@@ -60,6 +62,7 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
       this.dataset.clear();
       this.setPortfolioGraphInit(data['wallet']);
       this.title = this.route.snapshot.paramMap.get('currency');
+      this.historys = this.getHistory(this.route.snapshot.paramMap.get('currency'))
       this.setPortfolioGraphPush(this.route.snapshot.paramMap.get('currency'));
     });
   }
@@ -128,7 +131,9 @@ export class GraphWalletComponent implements AfterViewInit, OnDestroy {
     this.routeSubscription.unsubscribe();
     this.pushSubscribe.unsubscribe();
   }
-
+  private getHistory(currency: string) {
+    return this.resolver.getHistory(currency).map(historys => JSON.parse(historys));
+  }
   private async calcStatistique() {
     this.statistique = {
       last_hours: calcPercentage(this.dataset, 'hours'),

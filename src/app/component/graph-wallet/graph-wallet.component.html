@@ -31,3 +31,26 @@
       </div>
     </div>
   </div>
+
+  <table class="table table-dark">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Currency</th>
+        <th scope="col">Description</th>
+        <th scope="col">Balance</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let history of historys | async; let i = index">
+        <th scope="row">{{i}}</th>
+        <td>{{history.currency}}</td>
+        <td>{{history.description}}</td>
+        <td>{{history.balance}}</td>
+        <td>{{history.amount}}</td>
+        <td>{{history.timestamps}}</td>
+      </tr>      
+    </tbody>
+  </table>
